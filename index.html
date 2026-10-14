@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: fetch() en JavaScript con la API de Harry Potter</title>
+    <meta name="description"
+        content="Aprende a usar la API Fetch de JavaScript consultando personajes y hechizos de Harry Potter. Guía paso a paso con demos interactivas.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- Navegación -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Fetch<span class="highlight">Hogwarts</span></span>
+            </div>
+            <nav>
+                <a href="#laboratorio" class="nav-link">Laboratorio</a>
+                <a href="#explicacion" class="nav-link">Paso a paso</a>
+                <a href="#comparativa" class="nav-link">Sintaxis</a>
+                <a href="#buenas-practicas" class="nav-link">Buenas prácticas</a>
+                <a href="#malas-practicas" class="nav-link">Malas prácticas</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- Hero -->
+        <section class="hero-section">
+            <p class="hero-badge">🪄 API Fetch y asincronía en JavaScript</p>
+            <h1 class="hero-title">Convoca datos de Hogwarts con <code>fetch()</code></h1>
+            <p class="hero-subtitle">
+                Elige una casa, lanza la petición y mira cómo un JSON se convierte en tarjetas de personajes.
+                Todo en vivo contra <code>https://hp-api.onrender.com/api</code>.
+            </p>
+        </section>
+
+        <!-- Laboratorio -->
+        <section id="laboratorio" class="card demo-card" data-house="gryffindor">
+            <div class="card-header">
+                <h2>🧪 Laboratorio de peticiones</h2>
+                <p>Cambia de casa y el laboratorio toma sus colores. Cada ejecución muestra el estado HTTP, el tiempo de
+                    respuesta y el código usado.</p>
+            </div>
+
+            <div class="demo-controls">
+                <div class="input-group">
+                    <label for="endpointSelect">Endpoint de la API</label>
+                    <div class="url-bar">
+                        <span class="http-method">GET</span>
+                        <span class="url-base">https://hp-api.onrender.com/api/</span>
+                        <select id="endpointSelect">
+                            <optgroup label="Personajes por casa">
+                                <option value="characters/house/gryffindor" selected>characters/house/gryffindor</option>
+                                <option value="characters/house/slytherin">characters/house/slytherin</option>
+                                <option value="characters/house/ravenclaw">characters/house/ravenclaw</option>
+                                <option value="characters/house/hufflepuff">characters/house/hufflepuff</option>
+                            </optgroup>
+                            <optgroup label="Otros recursos">
+                                <option value="characters/students">characters/students</option>
+                                <option value="characters/staff">characters/staff</option>
+                                <option value="spells">spells</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="searchInput">Filtrar por nombre (se aplica en el navegador)</label>
+                    <input type="text" id="searchInput" class="search-input" placeholder="ej: harry, hermione, snape">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btnFetchAsync" class="btn btn-primary">
+                        <span class="btn-icon">⚡</span> Ejecutar con <code>async/await</code>
+                    </button>
+                    <button id="btnFetchPromises" class="btn btn-secondary">
+                        <span class="btn-icon">🔄</span> Ejecutar con <code>.then()</code>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Métricas -->
+            <div id="metricsBar" class="metrics-bar hidden">
+                <div class="metric-item">
+                    <span class="metric-label">Estado HTTP</span>
+                    <span id="metricStatus" class="badge badge-success">200 OK</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Tiempo de respuesta</span>
+                    <span id="metricTime" class="metric-value">0 ms</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Tipo de contenido</span>
+                    <span id="metricType" class="metric-value">application/json</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Registros recibidos</span>
+                    <span id="metricCount" class="metric-value">0</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Modo utilizado</span>
+                    <span id="metricMode" class="badge badge-info">async/await</span>
+                </div>
+            </div>
+
+            <!-- Pestañas -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="tab-card">🪪 Tarjetas</button>
+                    <button class="tab-btn" data-tab="tab-json">📋 Respuesta JSON</button>
+                    <button class="tab-btn" data-tab="tab-code">💻 Código ejecutado</button>
+                </div>
+
+                <div class="tabs-content">
+                    <div id="tab-card" class="tab-pane active">
+                        <div id="resultsDisplay" class="results-container">
+                            <div class="placeholder-state">
+                                <span class="placeholder-icon">🔮</span>
+                                <p>Pulsa <strong>Ejecutar</strong> para consultar la API.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-json" class="tab-pane">
+                        <div class="code-header">
+                            <span>Respuesta del servidor (JSON)</span>
+                            <button id="btnCopyJson" class="btn-sm">📋 Copiar JSON</button>
+                        </div>
+                        <pre id="jsonOutput"
+                            class="code-block"><code>// Pulsa "Ejecutar" para ver la respuesta aquí...</code></pre>
+                    </div>
+
+                    <div id="tab-code" class="tab-pane">
+                        <div class="code-header">
+                            <span id="codeTitle">Código JavaScript ejecutado</span>
+                            <button id="btnCopyCode" class="btn-sm">📋 Copiar código</button>
+                        </div>
+                        <pre id="codeOutput" class="code-block"><code id="codeSnippetContent"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explicación paso a paso -->
+        <section id="explicacion" class="explanation-section">
+            <h2 class="section-title">💡 Cómo funciona <code>fetch()</code>, paso a paso</h2>
+            <p class="section-subtitle">Lo que ocurre desde que llamas a la función hasta que pintas las tarjetas.</p>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Llamada y promesa</h3>
+                    <p>
+                        <code>fetch(url)</code> lanza una petición HTTP asíncrona y devuelve de inmediato una
+                        <strong>Promise</strong>. El resto del programa sigue corriendo mientras llega la respuesta.
+                    </p>
+                    <div class="mini-code">
+                        <code>const respuesta = await fetch(url);</code>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Objeto Response</h3>
+                    <p>
+                        La promesa entrega un objeto <code>Response</code> con el estado y las cabeceras, pero todavía
+                        sin los datos. Comprueba siempre <code>response.ok</code>.
+                    </p>
+                    <div class="mini-code">
+                        <code>if (!respuesta.ok) throw new Error(respuesta.status);</code>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Leer el JSON</h3>
+                    <p>
+                        <code>response.json()</code> lee el cuerpo y lo convierte en objetos de JavaScript. También es
+                        asíncrono. Aquí obtendrás un <strong>arreglo</strong> de personajes o de hechizos.
+                    </p>
+                    <div class="mini-code">
+                        <code>const personajes = await respuesta.json();</code>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Filtrar y mostrar</h3>
+                    <p>
+                        Con el arreglo en mano usa <code>filter()</code> y <code>map()</code> para quedarte con lo que
+                        importa y generar el HTML de cada tarjeta.
+                    </p>
+                    <div class="mini-code">
+                        <code>personajes.filter(p => p.name.includes('harry'))</code>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Manejo de errores</h3>
+                    <p>
+                        Envuelve el flujo en <code>try...catch</code> para atrapar fallos de red, de CORS o una URL
+                        inaccesible, y avisa al usuario con un mensaje claro.
+                    </p>
+                    <div class="mini-code">
+                        <code>try { /* fetch */ } catch (e) { mostrarError(e); }</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparativa de sintaxis -->
+        <section id="comparativa" class="card">
+            <div class="card-header">
+                <h2>⚔️ Sintaxis: <code>async/await</code> frente a <code>.then()</code></h2>
+                <p>Hacen lo mismo por debajo. <code>async/await</code> se lee de arriba abajo; las promesas
+                    encadenan los pasos con <code>.then()</code>.</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="code-box">
+                    <div class="code-box-header badge-modern">
+                        <span>✨ Opción 1: async / await</span>
+                    </div>
+                    <pre class="code-block"><code><span class="kwd">async function</span> <span class="fn">obtenerGryffindor</span>() {
+  <span class="kwd">try</span> {
+    <span class="com">// 1. Hacer la petición HTTP</span>
+    <span class="kwd">const</span> res = <span class="kwd">await</span> <span class="fn">fetch</span>(<span class="str">'https://hp-api.onrender.com/api/characters/house/gryffindor'</span>);
+
+    <span class="com">// 2. Validar la respuesta (200-299)</span>
+    <span class="kwd">if</span> (!res.ok) {
+      <span class="kwd">throw new</span> <span class="typ">Error</span>(<span class="str">`Error HTTP: ${res.status}`</span>);
+    }
+
+    <span class="com">// 3. Convertir el cuerpo a JSON (un arreglo)</span>
+    <span class="kwd">const</span> personajes = <span class="kwd">await</span> res.<span class="fn">json</span>();
+
+    <span class="com">// 4. Usar los datos</span>
+    console.<span class="fn">log</span>(<span class="str">'Total:'</span>, personajes.length);
+    console.<span class="fn">log</span>(<span class="str">'Primero:'</span>, personajes[0].name);
+  } <span class="kwd">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Algo salió mal:'</span>, error.message);
+  }
+}</code></pre>
+                </div>
+
+                <div class="code-box">
+                    <div class="code-box-header badge-traditional">
+                        <span>📜 Opción 2: promesas (.then / .catch)</span>
+                    </div>
+                    <pre class="code-block"><code><span class="kwd">function</span> <span class="fn">obtenerGryffindorConPromesas</span>() {
+  <span class="com">// 1. Iniciar la petición</span>
+  <span class="fn">fetch</span>(<span class="str">'https://hp-api.onrender.com/api/characters/house/gryffindor'</span>)
+    .<span class="fn">then</span>(res => {
+      <span class="com">// 2. Validar la respuesta</span>
+      <span class="kwd">if</span> (!res.ok) {
+        <span class="kwd">throw new</span> <span class="typ">Error</span>(<span class="str">`Error HTTP: ${res.status}`</span>);
+      }
+      <span class="com">// 3. Devolver la promesa del JSON</span>
+      <span class="kwd">return</span> res.<span class="fn">json</span>();
+    })
+    .<span class="fn">then</span>(personajes => {
+      <span class="com">// 4. Usar los datos</span>
+      console.<span class="fn">log</span>(<span class="str">'Total:'</span>, personajes.length);
+      console.<span class="fn">log</span>(<span class="str">'Primero:'</span>, personajes[0].name);
+    })
+    .<span class="fn">catch</span>(error => {
+      <span class="com">// Cualquier error de la cadena llega aquí</span>
+      console.<span class="fn">error</span>(<span class="str">'Algo salió mal:'</span>, error.message);
+    });
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buenas prácticas -->
+        <section id="buenas-practicas" class="card">
+            <div class="card-header">
+                <h2>✅ Detalles clave y buenas prácticas</h2>
+            </div>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">🛑</div>
+                    <div>
+                        <h4>fetch no falla con un 404 o un 500</h4>
+                        <p>La promesa solo se rechaza ante fallos de red. Si la API responde con un error HTTP, la
+                            promesa se resuelve con <code>response.ok = false</code>. Revísalo tú.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">⏳</div>
+                    <div>
+                        <h4>Hay dos promesas en el camino</h4>
+                        <p>Primero esperas la respuesta de la red (<code>fetch</code>) y luego la lectura del cuerpo
+                            (<code>response.json()</code>). Ambas necesitan <code>await</code> o <code>.then()</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">🗂️</div>
+                    <div>
+                        <h4>Esta API devuelve arreglos</h4>
+                        <p>PokéAPI devolvía un objeto por Pokémon. Aquí cada endpoint responde con una lista, así que
+                            trabajas con <code>filter()</code>, <code>map()</code> y <code>length</code>.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">🐢</div>
+                    <div>
+                        <h4>La primera petición puede tardar</h4>
+                        <p>La API está en un hosting gratuito que se "duerme" si nadie la usa. La primera llamada puede
+                            tardar varios segundos: muestra siempre un estado de carga.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">🔒</div>
+                    <div>
+                        <h4>CORS</h4>
+                        <p>La API permite peticiones desde otros orígenes, por eso funciona desde tu navegador sin
+                            configurar nada. Con una API sin CORS la petición sería bloqueada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Malas prácticas -->
+        <section id="malas-practicas" class="card">
+            <div class="card-header">
+                <h2>🚫 Malas prácticas que debes evitar</h2>
+            </div>
+            <div class="tips-grid">
+                <div class="tip-card tip-bad">
+                    <div class="tip-icon">🙈</div>
+                    <div>
+                        <h4>Ignorar <code>response.ok</code></h4>
+                        <p>Si llamas a <code>.json()</code> sin validar, un error 404 puede romper tu código más
+                            adelante con un mensaje confuso.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card tip-bad">
+                    <div class="tip-icon">🔇</div>
+                    <div>
+                        <h4>No tener <code>catch</code></h4>
+                        <p>Sin captura de errores, la página se queda cargando para siempre y el usuario no sabe qué
+                            pasó.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card tip-bad">
+                    <div class="tip-icon">💉</div>
+                    <div>
+                        <h4>Insertar datos con <code>innerHTML</code> sin limpiar</h4>
+                        <p>Los textos de una API externa no son de fiar. Este proyecto los escapa con una función
+                            <code>esc()</code> antes de pintarlos.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card tip-bad">
+                    <div class="tip-icon">🔁</div>
+                    <div>
+                        <h4>Disparar peticiones sin control</h4>
+                        <p>Llamar a la API en cada tecla o varias veces seguidas la satura. Filtra en el navegador los
+                            datos que ya descargaste.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Guía didáctica de HTML y JavaScript | Datos de la <a href="https://hp-api.onrender.com/"
+                    target="_blank" rel="noopener">HP-API</a></p>
+            <p class="copyright">&copy; 2026 Dise&ntilde;o de Sistemas de Internet - Universidad Nacional de Ingeniería
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
