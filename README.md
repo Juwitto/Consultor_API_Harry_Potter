@@ -1,10 +1,10 @@
-# 🪄 Guía Interactiva: API Fetch en JavaScript & HP-API
+# Guía Interactiva: API Fetch en JavaScript & HP-API
 
-Guía didáctica e interactiva para la asignatura **Diseño de Sistemas de Internet**. Explica cómo consumir servicios web asíncronos en JavaScript con la API nativa `fetch()`, usando la API pública de Harry Potter (`https://hp-api.onrender.com/api`).
+Guía didáctica e interactiva para la asignatura Diseño de Sistemas de Internet. Explica cómo consumir servicios web asíncronos en JavaScript con la API nativa `fetch()`, usando la API pública de Harry Potter (`https://hp-api.onrender.com/api`).
 
 ---
 
-## 🚀 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```text
 harry-potter-fetch/
@@ -18,19 +18,19 @@ harry-potter-fetch/
 
 ---
 
-## 💻 Características
+##  Características
 
 1. **Laboratorio de peticiones en vivo:** consulta personajes por casa (Gryffindor, Slytherin, Ravenclaw, Hufflepuff), estudiantes, profesores y hechizos.
 2. **Tema por casa:** al elegir una casa, el laboratorio cambia sus colores.
 3. **Medición de rendimiento:** muestra el estado HTTP, la latencia en milisegundos, el tipo de contenido y la cantidad de registros recibidos.
-4. **Doble implementación:** el mismo flujo con **`async/await`** y con **promesas (`.then / .catch`)**.
+4. **Doble implementación:** el mismo flujo con `async/await` y con promesas (`.then / .catch`).
 5. **Filtro en el navegador:** busca por nombre sobre los datos ya descargados, sin repetir la petición.
 6. **Visor de código y JSON:** pestañas para ver la respuesta bruta y el código JavaScript ejecutado.
 7. **Seguridad básica:** los textos de la API se escapan con `esc()` antes de insertarse con `innerHTML`.
 
 ---
 
-## 🔗 Endpoints usados
+##  Endpoints usados
 
 | Endpoint | Devuelve |
 | --- | --- |
@@ -39,13 +39,13 @@ harry-potter-fetch/
 | `/api/characters/staff` | Personal de Hogwarts |
 | `/api/spells` | Hechizos con su descripción |
 
-Cada endpoint responde con un **arreglo** de objetos (a diferencia de PokéAPI, que devolvía un objeto por Pokémon).
+Cada endpoint responde con un arreglo de objetos (a diferencia de PokéAPI, que devolvía un objeto por Pokémon).
 
-> ⚠️ La API está en un hosting gratuito que se "duerme" por inactividad. La primera petición puede tardar varios segundos.
+>  La API está en un hosting gratuito que se "duerme" por inactividad. La primera petición puede tardar varios segundos.
 
 ---
 
-## 📖 Resumen técnico: ¿cómo funciona `fetch()`?
+## Resumen técnico: ¿cómo funciona `fetch()`?
 
 ### 1. Con `async / await` (sintaxis moderna)
 
@@ -95,7 +95,7 @@ function obtenerGryffindorConPromesas() {
 
 ---
 
-## ▶️ Cómo ejecutarlo
+##  Cómo ejecutarlo
 
 1. Abre la carpeta del proyecto en VS Code.
 2. Abre `index.html` en el navegador (o usa la extensión **Live Server**).
